@@ -22,7 +22,7 @@ mccabe==0.7.0
 mypy-extensions==0.4.3
 pathspec==0.10.1
 platformdirs==2.5.2
-psycopg2==2.9.4
+psycopg2-binary==2.9.4
 pycodestyle==2.9.1
 pyflakes==2.5.0
 python-dotenv==0.21.0
