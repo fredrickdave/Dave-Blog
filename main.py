@@ -57,8 +57,11 @@ def user_loader(user_id):
 # https://help.heroku.com/ZKNTJQSK/why-is-sqlalchemy-1-4-x-not-connecting-to-heroku-postgres
 
 uri = os.getenv("DATABASE_URL")  # or other relevant config var
+print(uri)
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
+else:
+    uri = "sqlite:///blog.db"
 # rest of connection code using the connection string `uri`
 
 app.config["SQLALCHEMY_DATABASE_URI"] = uri
