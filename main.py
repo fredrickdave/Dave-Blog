@@ -2,7 +2,7 @@ import os
 from datetime import date
 from functools import wraps
 
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 from flask import Flask, abort, flash, redirect, render_template, url_for
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
@@ -16,10 +16,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from forms import CommentForm, CreatePostForm, CreateRegisterForm, LoginForm
 
-# load_dotenv()
+load_dotenv()
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
@@ -131,7 +131,10 @@ class Comment(db.Model):
     text = db.Column(db.Text, nullable=False)
 
 
-db.create_all()
+# Need to run this once in Heroku to create Postgres DB, or else will receive DB error.
+# Alternatively, can try solution below by running the command in Heroku console
+# https://stackoverflow.com/questions/68445323/basic-flask-app-not-creating-table-in-heroku-postgres-database
+# db.create_all()
 
 
 # Decorators
