@@ -15,7 +15,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from forms import CommentForm, CreatePostForm, CreateRegisterForm, LoginForm
 
+print(os.environ.get("DATABASE_URL"))
 load_dotenv()
+print(os.environ.get("DATABASE_URL"))
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")

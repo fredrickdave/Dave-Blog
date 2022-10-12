@@ -4,6 +4,7 @@
 
 blog-with-users-end.zip
 .vscode/
+backup.py
 
 ### Flask ###
 instance/*
