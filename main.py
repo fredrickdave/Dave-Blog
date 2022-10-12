@@ -56,7 +56,7 @@ def user_loader(user_id):
 # app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///blog.db")
 app.config[
     "SQLALCHEMY_DATABASE_URI"
-] = "postgres://qrvdzcuhltvvll:396c0c8891bc82fd86e597bec28e5a3647fc088de0110453c1a94cfa37f67882@ec2-54-147-36-107.compute-1.amazonaws.com:5432/db800hp7k23dm8"
+] = "postgresql://qrvdzcuhltvvll:396c0c8891bc82fd86e597bec28e5a3647fc088de0110453c1a94cfa37f67882@ec2-54-147-36-107.compute-1.amazonaws.com:5432/db800hp7k23dm8"
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
