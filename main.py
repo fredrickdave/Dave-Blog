@@ -2,28 +2,25 @@ import os
 from datetime import date
 from functools import wraps
 
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 from flask import Flask, abort, flash, redirect, render_template, url_for
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
 from flask_gravatar import Gravatar
 from flask_login import LoginManager, UserMixin, current_user, login_required, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
-
-# from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from forms import CommentForm, CreatePostForm, CreateRegisterForm, LoginForm
 
-# load_dotenv()
+load_dotenv()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 ckeditor = CKEditor(app)
 Bootstrap5(app)
-
-# print(os.getenv("SECRET_KEY"))
 
 # Gravatar
 gravatar = Gravatar(
@@ -188,59 +185,58 @@ def get_all_posts():
     return render_template("index.html", all_posts=posts)
 
 
-# Rewritten this route as I was receiving error when migrated to Postgres
-# integrityerror check won't work since it's no longer using sqlite db
+# Old register route using integrityerror as check
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = CreateRegisterForm()
     if form.validate_on_submit():
-        # print("validated")
-
-        if User.query.filter_by(email=form.email.data).first():
-            print(User.query.filter_by(email=form.email.data).first().email)
-            # User already exists
-            flash("You've already signed up with that email, log in instead!")
-            return redirect(url_for("login"))
-
+        print("validated")
         hash_and_salted_pw = generate_password_hash(password=form.password.data, method="pbkdf2:sha256", salt_length=8)
-        new_user = User(
-            name=form.name.data,
-            email=form.email.data,
-            password=hash_and_salted_pw,
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        login_user(new_user)
-        return redirect(url_for("get_all_posts"))
+        # Error handling for SQLAlchemy found in https://www.youtube.com/watch?v=P-Z1wXFW4Is
+        # Also check day 63 project
+        # Checks if email already exists in database
+        try:
+            new_user = User(
+                name=form.name.data,
+                email=form.email.data,
+                password=hash_and_salted_pw,
+            )
+            db.session.add(new_user)
+            db.session.commit()
+        # Check if duplicate email exists in db
+        except IntegrityError:
+            flash("You've already signed up with that email address. Log in instead.")
+            return redirect(url_for("login"))
+        else:
+            login_user(new_user)
+            return redirect(url_for("get_all_posts"))
 
     return render_template("register.html", form=form)
 
 
-# Old register route using integrityerror as check
+# Alternate solution by Angela for checking duplicate, looks better but I'll keep my code above for reference.
 # @app.route("/register", methods=["GET", "POST"])
 # def register():
 #     form = CreateRegisterForm()
 #     if form.validate_on_submit():
-#         print("validated")
-#         hash_and_salted_pw = generate_password_hash(password=form.password.data, method="pbkdf2:sha256", salt_length=8)
-#         # Error handling for SQLAlchemy found in https://www.youtube.com/watch?v=P-Z1wXFW4Is
-#         # Also check day 63 project
-#         # Checks if email already exists in database
-#         try:
-#             new_user = User(
-#                 name=form.name.data,
-#                 email=form.email.data,
-#                 password=hash_and_salted_pw,
-#             )
-#             db.session.add(new_user)
-#             db.session.commit()
-#         # Check if duplicate email exists in db
-#         except IntegrityError:
-#             flash("You've already signed up with that email address. Log in instead.")
+#         # print("validated")
+
+#         if User.query.filter_by(email=form.email.data).first():
+#             print(User.query.filter_by(email=form.email.data).first().email)
+#             # User already exists
+#             flash("You've already signed up with that email, log in instead!")
 #             return redirect(url_for("login"))
-#         else:
-#             login_user(new_user)
-#             return redirect(url_for("get_all_posts"))
+
+#         hash_and_salted_pw = generate_password_hash(password=form.password.data, method="pbkdf2:sha256", salt_length=8)
+#         new_user = User(
+#             name=form.name.data,
+#             email=form.email.data,
+#             password=hash_and_salted_pw,
+#         )
+#         db.session.add(new_user)
+#         db.session.commit()
+#         login_user(new_user)
+#         return redirect(url_for("get_all_posts"))
 
 #     return render_template("register.html", form=form)
 
